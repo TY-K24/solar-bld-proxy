@@ -13,8 +13,8 @@ export default async function handler(req, res) {
   }
 
   try {
-    // 1. 건축인허가 기본개요 조회
-    const permitUrl = `https://apis.data.go.kr/1613000/ArchPmsService_v2/getApBasisOulnInfo`
+    // 1. 건축인허가 기본개요 조회 (ArchPmsHubService)
+    const permitUrl = `https://apis.data.go.kr/1613000/ArchPmsHubService/getApBasisOulnInfo`
       + `?serviceKey=${DATA_KEY}`
       + `&sigunguCd=${sigunguCd}&bjdongCd=${bjdongCd}`
       + `&numOfRows=10&pageNo=1&_type=json`;
@@ -29,7 +29,7 @@ export default async function handler(req, res) {
       if (items) permits = Array.isArray(items) ? items : [items];
     }
 
-    // 2. 용도지역지구구역 조회 (건축물대장 지역지구 API)
+    // 2. 용도지역지구구역 조회 (건축물대장)
     const zoneUrl = `https://apis.data.go.kr/1613000/BldRgstHubService/getBrJijiguInfo`
       + `?serviceKey=${DATA_KEY}`
       + `&sigunguCd=${sigunguCd}&bjdongCd=${bjdongCd}`
@@ -45,28 +45,26 @@ export default async function handler(req, res) {
       if (items2) zones = Array.isArray(items2) ? items2 : [items2];
     }
 
-    // 결과 정리
     const permitList = permits.slice(0, 5).map(p => ({
-      archGbCdNm:   String(p.archGbCdNm   || p.archgbcdnm   || ''),
-      archGbCd:     String(p.archGbCd     || p.archgbcd     || ''),
-      prmsDay:      String(p.prmsDay      || p.prmsday      || ''),
-      stcnsDay:     String(p.stcnsDay     || p.stcnsday     || ''),
-      useAprDay:    String(p.useAprDay    || p.useaprday    || ''),
-      mainPurpsCdNm:String(p.mainPurpsCdNm|| p.mainpurpscdnm|| ''),
-      bldNm:        String(p.bldNm        || p.bldnm        || ''),
-      grndFlrCnt:   parseInt(p.grndFlrCnt || p.grndflrcnt   || 0),
-      totArea:      parseFloat(p.totArea  || p.totarea      || 0),
+      archGbCdNm:    String(p.archGbCdNm    || p.archgbcdnm    || ''),
+      prmsDay:       String(p.prmsDay       || p.prmsday       || ''),
+      stcnsDay:      String(p.stcnsDay      || p.stcnsday      || ''),
+      useAprDay:     String(p.useAprDay     || p.useaprday     || ''),
+      mainPurpsCdNm: String(p.mainPurpsCdNm || p.mainpurpscdnm || ''),
+      bldNm:         String(p.bldNm         || p.bldnm         || ''),
+      grndFlrCnt:    parseInt(p.grndFlrCnt  || p.grndflrcnt    || 0),
+      totArea:       parseFloat(p.totArea   || p.totarea       || 0),
     }));
 
     const zoneList = zones.slice(0, 5).map(z => ({
-      jiyukCdNm:  String(z.jiyukCdNm  || z.jiyukcdnm  || ''),
-      jiguCdNm:   String(z.jiguCdNm   || z.jigucdnm   || ''),
-      guyukCdNm:  String(z.guyukCdNm  || z.guyukcdnm  || ''),
-      etcJijigu:  String(z.etcJijigu  || z.etcjijigu  || ''),
+      jiyukCdNm: String(z.jiyukCdNm || z.jiyukcdnm || ''),
+      jiguCdNm:  String(z.jiguCdNm  || z.jigucdnm  || ''),
+      guyukCdNm: String(z.guyukCdNm || z.guyukcdnm || ''),
+      etcJijigu: String(z.etcJijigu || z.etcjijigu || ''),
     })).filter(z => z.jiyukCdNm || z.jiguCdNm);
 
     return res.status(200).json({
-      _v: 'permit-v1',
+      _v: 'permit-v2',
       permits: permitList,
       zones: zoneList,
       permitCount: permits.length,
