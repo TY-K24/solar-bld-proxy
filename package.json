@@ -1,1 +1,7 @@
+{
+  "name": "solar-bld-proxy",
+  "version": "1.0.0",
+  "description": "건축물대장 API 프록시",
+  "private": true
+}
 
